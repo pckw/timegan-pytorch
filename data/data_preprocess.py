@@ -60,7 +60,7 @@ def data_preprocess(
     # Load data
     #########################
 
-    index = 'Idx'
+    #index = 'Idx'
 
     # Load csv
     print("Loading data...\n")
@@ -75,15 +75,15 @@ def data_preprocess(
     #########################
     
     no = ori_data.shape[0]
-    z_scores = stats.zscore(ori_data, axis=0, nan_policy='omit')
-    z_filter = np.nanmax(np.abs(z_scores), axis=1) < 3
-    ori_data = ori_data[z_filter]
-    print(f"Dropped {no - ori_data.shape[0]} rows (outliers)\n")
+    # z_scores = stats.zscore(ori_data, axis=0, nan_policy='omit')
+    # z_filter = np.nanmax(np.abs(z_scores), axis=1) < 3
+    # ori_data = ori_data[z_filter]
+    # print(f"Dropped {no - ori_data.shape[0]} rows (outliers)\n")
 
-    # Parameters
-    uniq_id = np.unique(ori_data[index])
-    no = len(uniq_id)
-    dim = len(ori_data.columns) - 1
+    # # Parameters
+    # uniq_id = np.unique(ori_data[index])
+    # no = len(uniq_id)
+    dim = len(ori_data.columns)
 
     #########################
     # Impute, scale and pad data
@@ -115,18 +115,19 @@ def data_preprocess(
     #     print(f"Changed padding value to: {padding_value}\n")
     
     # Output initialization
-    output = np.empty([no, max_seq_len, dim])  # Shape:[no, max_seq_len, dim]
+    output = np.empty([no-max_seq_len, max_seq_len, dim])  # Shape:[no, max_seq_len, dim]
     output.fill(padding_value)
     time = []
 
     # For each uniq id
-    for i in tqdm(range(no)):
+    for i in tqdm(range(no-max_seq_len)):
         # Extract the time-series data with a certain admissionid
 
-        curr_data = ori_data[ori_data[index] == uniq_id[i]].to_numpy()
+        #curr_data = ori_data[ori_data[index] == uniq_id[i]].to_numpy()
+        curr_data = ori_data[i:i + max_seq_len]
 
         # Impute missing data
-        curr_data = imputer(curr_data, impute_vals)
+        #curr_data = imputer(curr_data, impute_vals)
 
         # Normalize data
         curr_data = scaler.transform(curr_data)
@@ -136,13 +137,14 @@ def data_preprocess(
 
         # Pad data to `max_seq_len`
         if curr_no >= max_seq_len:
-            output[i, :, :] = curr_data[:max_seq_len, 1:]  # Shape: [1, max_seq_len, dim]
+            output[i, :, :] = curr_data[:max_seq_len, :]  # Shape: [1, max_seq_len, dim]
             time.append(max_seq_len)
         else:
-            output[i, :curr_no, :] = curr_data[:, 1:]  # Shape: [1, max_seq_len, dim]
+            output[i, :curr_no, :] = curr_data[:, :]  # Shape: [1, max_seq_len, dim]
             time.append(curr_no)
 
     return output, time, params, max_seq_len, padding_value
+
 
 def imputer(
     curr_data: np.ndarray, 

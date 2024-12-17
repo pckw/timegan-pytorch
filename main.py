@@ -137,60 +137,68 @@ def main(args):
     # Preprocess data for seeker
     #########################
 
-    # Define enlarge data and its labels
-    enlarge_data = np.concatenate((train_data, test_data), axis=0)
-    enlarge_time = np.concatenate((train_time, test_time), axis=0)
-    enlarge_data_label = np.concatenate((np.ones([train_data.shape[0], 1]), np.zeros([test_data.shape[0], 1])), axis=0)
+    # # Define enlarge data and its labels
+    # enlarge_data = np.concatenate((train_data, test_data), axis=0)
+    # enlarge_time = np.concatenate((train_time, test_time), axis=0)
+    # enlarge_data_label = np.concatenate((np.ones([train_data.shape[0], 1]), np.zeros([test_data.shape[0], 1])), axis=0)
 
-    # Mix the order
-    idx = np.random.permutation(enlarge_data.shape[0])
-    enlarge_data = enlarge_data[idx]
-    enlarge_data_label = enlarge_data_label[idx]
+    # # Mix the order
+    # idx = np.random.permutation(enlarge_data.shape[0])
+    # enlarge_data = enlarge_data[idx]
+    # enlarge_data_label = enlarge_data_label[idx]
 
     #########################
     # Evaluate the performance
     #########################
 
-    # 1. Feature prediction
-    feat_idx = np.random.permutation(train_data.shape[2])[:args.feat_pred_no]
-    print("Running feature prediction using original data...")
-    ori_feat_pred_perf = feature_prediction(
-        (train_data, train_time), 
-        (test_data, test_time),
-        feat_idx
-    )
-    print("Running feature prediction using generated data...")
-    new_feat_pred_perf = feature_prediction(
-        (generated_data, generated_time),
-        (test_data, test_time),
-        feat_idx
-    )
+    # # 1. Feature prediction
+    # feat_idx = np.random.permutation(train_data.shape[2])[:args.feat_pred_no]
+    # print("Running feature prediction using original data...")
+    # ori_feat_pred_perf = feature_prediction(
+    #     (train_data, train_time), 
+    #     (test_data, test_time),
+    #     feat_idx,
+    #     device=args.device,
+    #     max_seq_len=args.max_seq_len
+    # )
+    # print("Running feature prediction using generated data...")
+    # new_feat_pred_perf = feature_prediction(
+    #     (generated_data, generated_time),
+    #     (test_data, test_time),
+    #     feat_idx,
+    #     device=args.device,
+    #     max_seq_len=args.max_seq_len
+    # )
 
-    feat_pred = [ori_feat_pred_perf, new_feat_pred_perf]
+    # feat_pred = [ori_feat_pred_perf, new_feat_pred_perf]
 
-    print('Feature prediction results:\n' +
-          f'(1) Ori: {str(np.round(ori_feat_pred_perf, 4))}\n' +
-          f'(2) New: {str(np.round(new_feat_pred_perf, 4))}\n')
+    # print('Feature prediction results:\n' +
+    #       f'(1) Ori: {str(np.round(ori_feat_pred_perf, 4))}\n' +
+    #       f'(2) New: {str(np.round(new_feat_pred_perf, 4))}\n')
 
-    # 2. One step ahead prediction
-    print("Running one step ahead prediction using original data...")
-    ori_step_ahead_pred_perf = one_step_ahead_prediction(
-        (train_data, train_time), 
-        (test_data, test_time)
-    )
-    print("Running one step ahead prediction using generated data...")
-    new_step_ahead_pred_perf = one_step_ahead_prediction(
-        (generated_data, generated_time),
-        (test_data, test_time)
-    )
+    # # 2. One step ahead prediction
+    # print("Running one step ahead prediction using original data...")
+    # ori_step_ahead_pred_perf = one_step_ahead_prediction(
+    #     (train_data, train_time), 
+    #     (test_data, test_time),
+    #     device=args.device,
+    #     max_seq_len=args.max_seq_len
+    # )
+    # print("Running one step ahead prediction using generated data...")
+    # new_step_ahead_pred_perf = one_step_ahead_prediction(
+    #     (generated_data, generated_time),
+    #     (test_data, test_time),
+    #     device=args.device,
+    #     max_seq_len=args.max_seq_len
+    # )
 
-    step_ahead_pred = [ori_step_ahead_pred_perf, new_step_ahead_pred_perf]
+    # step_ahead_pred = [ori_step_ahead_pred_perf, new_step_ahead_pred_perf]
 
-    print('One step ahead prediction results:\n' +
-          f'(1) Ori: {str(np.round(ori_step_ahead_pred_perf, 4))}\n' +
-          f'(2) New: {str(np.round(new_step_ahead_pred_perf, 4))}\n')
+    # print('One step ahead prediction results:\n' +
+    #       f'(1) Ori: {str(np.round(ori_step_ahead_pred_perf, 4))}\n' +
+    #       f'(2) New: {str(np.round(new_step_ahead_pred_perf, 4))}\n')
 
-    print(f"Total Runtime: {(time.time() - start)/60} mins\n")
+    # print(f"Total Runtime: {(time.time() - start)/60} mins\n")
 
     return None
 
@@ -212,7 +220,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--device',
         choices=['cuda', 'cpu'],
-        default='cuda',
+        default='cpu',
         type=str)
     parser.add_argument(
         '--exp',
@@ -234,7 +242,7 @@ if __name__ == "__main__":
     # Data Arguments
     parser.add_argument(
         '--max_seq_len',
-        default=100,
+        default=50,
         type=int)
     parser.add_argument(
         '--train_rate',
@@ -244,15 +252,15 @@ if __name__ == "__main__":
     # Model Arguments
     parser.add_argument(
         '--emb_epochs',
-        default=600,
+        default=50,
         type=int)
     parser.add_argument(
         '--sup_epochs',
-        default=600,
+        default=50,
         type=int)
     parser.add_argument(
         '--gan_epochs',
-        default=600,
+        default=50,
         type=int)
     parser.add_argument(
         '--batch_size',

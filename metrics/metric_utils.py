@@ -37,7 +37,7 @@ def reidentify_score(enlarge_label, pred_label):
     accuracy = accuracy_score(enlarge_label, pred_label > 0.5)  
     return accuracy
 
-def feature_prediction(train_data, test_data, index):
+def feature_prediction(train_data, test_data, index, device="cuda", max_seq_len=100):
     """Use the other features to predict a certain feature.
 
     Args:
@@ -57,7 +57,7 @@ def feature_prediction(train_data, test_data, index):
     # Set model parameters
 
     args = {}
-    args["device"] = "cuda"
+    args["device"] = device
     args["task"] = "regression"
     args["model_type"] = "gru"
     args["bidirectional"] = False
@@ -69,7 +69,7 @@ def feature_prediction(train_data, test_data, index):
     args["n_layers"] = 3
     args["dropout"] = 0.5
     args["padding_value"] = -1.0
-    args["max_seq_len"] = 100
+    args["max_seq_len"] = max_seq_len
     args["learning_rate"] = 1e-3
     args["grad_clip_norm"] = 5.0
 
@@ -149,7 +149,7 @@ def feature_prediction(train_data, test_data, index):
     
     return perf
       
-def one_step_ahead_prediction(train_data, test_data):
+def one_step_ahead_prediction(train_data, test_data, device="cuda", max_seq_len=100):
     """Use the previous time-series to predict one-step ahead feature values.
 
     Args:
@@ -167,7 +167,7 @@ def one_step_ahead_prediction(train_data, test_data):
 
     # Set model parameters
     args = {}
-    args["device"] = "cuda"
+    args["device"] = device
     args["task"] = "regression"
     args["model_type"] = "gru"
     args["bidirectional"] = False
@@ -179,7 +179,7 @@ def one_step_ahead_prediction(train_data, test_data):
     args["n_layers"] = 3
     args["dropout"] = 0.5
     args["padding_value"] = -1.0
-    args["max_seq_len"] = 100 - 1   # only 99 is used for prediction
+    args["max_seq_len"] = max_seq_len - 1   # only 99 is used for prediction
     args["learning_rate"] = 1e-3
     args["grad_clip_norm"] = 5.0
 

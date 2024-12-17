@@ -1,22 +1,22 @@
 #!/bin/bash
 train=true
-export TZ="GMT-8"
+export TZ="GMT-1"
 
 # Experiment variables
 exp="test"
 
 # Iteration variables
 emb_epochs=50
-sup_epochs=50
-gan_epochs=50
+sup_epochs=200
+gan_epochs=100
 
 python main.py \
---device            cuda \
+--device            cpu \
 --exp               $exp \
 --is_train          $train \
 --seed              42 \
 --feat_pred_no      1 \
---max_seq_len       100 \
+--max_seq_len       152 \
 --train_rate        0.5 \
 --emb_epochs        $emb_epochs \
 --sup_epochs        $sup_epochs \
