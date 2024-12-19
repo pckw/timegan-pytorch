@@ -102,7 +102,7 @@ def joint_trainer(
     """The training loop for training the model altogether
     """
     logger = trange(
-        args.sup_epochs, 
+        args.gan_epochs, 
         desc=f"Epoch: 0, E_loss: 0, G_loss: 0, D_loss: 0"
     )
     
